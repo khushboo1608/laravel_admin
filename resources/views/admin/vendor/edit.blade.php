@@ -145,7 +145,7 @@
                       @if(isset($VendorData) && isset($VendorData->vendor_gallery))
                         @if($VendorData->vendor_gallery !='')
                           @foreach ($VendorData->vendor_gallery as $item)
-                          <?php dd($item); ?>
+                          <?php //dd($item); ?>
                           <?php //echo $item;  ?>
                             <div class="col-md-2">
                             <div class="fileupload_block">
@@ -154,25 +154,33 @@
                                 <a href="{{$item}}" target="_blank" ><b> View </b></a> 
                                 @if($item !='')
                                 @php 
-                                  $img_id = explode('vendor_gallery', $item); 
-                                
-                                                       
+                                  $img_id = explode('vendor_img', $item); 
+                                 
+                                  $gallery_img = $img_id[1];
                                   @endphp
-                                <a href="{{$url}}/delete_img/{{$VendorData->vendor_id}}/{{$img_id}}" style="margin-left: 20px;"><b> Delete </b></a>
+                                  <a href="{{$url}}/delete_img/{{$VendorData->vendor_id}}/{{$gallery_img}}" style="margin-left: 20px;"><b> Delete </b></a>
                                 @endif
                               </div>                          
                             </div>
                             </div> 
-                            <?php //exit; ?>
+                           
                             @endforeach
+                            <?php //exit; ?>
                         @endif
                       @endif
                      
-                          @if(isset($VendorData) && isset($VendorData->interior_images))
-                      </div>
-                          <input id="vendor_gallery" type="hidden" name="vendor_gallery"  value="{{$VendorData->interior_images}}">
-                            @endif
-                            <br>                       
+                     
+                    </div>
+                    @if(isset($VendorData) && isset($VendorData->vendor_gallery))
+                        @if(is_array($VendorData->vendor_gallery))
+                            {{-- Convert the array to a string --}}
+                            <?php  $galleryValue = implode(',', $VendorData->vendor_gallery); ?>
+                            <input id="vendor_gallery_edit1" type="hidden" name="vendor_gallery_edit1" value="{{ htmlspecialchars($galleryValue) }}">
+                        @else
+                            <input id="vendor_gallery_edit" type="hidden" name="vendor_gallery_edit" value="{{ htmlspecialchars($VendorData->vendor_gallery) }}">
+                        @endif
+                    @endif
+                    <br>                   
                     </div>
                   <!-- Search input -->
                   <input id="searchInput" class="controls" type="text" placeholder="Enter a location">

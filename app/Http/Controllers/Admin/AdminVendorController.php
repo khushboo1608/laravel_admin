@@ -145,7 +145,7 @@ class AdminVendorController extends Controller
     {
         //
         $input = $request->all();
-        // dd($input);
+        // dd($request->vendor_gallery);
         // exit;
         $message="";
         $vendor_icon="";
@@ -154,7 +154,7 @@ class AdminVendorController extends Controller
         $gallery = "";
         if($input['vendor_id'] != ""){
             $vendor = Vendor::where(['vendor_id' => $input['vendor_id']])->first();
-
+            // dd($vendor);
             $rules = [
                 'vendor_email' => 'unique:vendors,vendor_email,'.$input['vendor_id'].',vendor_id',
                 'vendor_phone' => 'unique:vendors,vendor_phone,'.$input['vendor_id'].',vendor_id',
@@ -183,7 +183,7 @@ class AdminVendorController extends Controller
                     // echo 'if';
                 } else {
                     // echo 'else';
-                    $vendor_icon = $request->vendor_icon;
+                    $vendor_icon = $vendor['vendor_icon'];
                 }
 
                 if ($request->vendor_banner != "") {
@@ -197,30 +197,37 @@ class AdminVendorController extends Controller
                     // echo 'if';
                 } else {
                     // echo 'else';
-                    $vendor_banner = $request->vendor_banner;
+                    $vendor_banner = $vendor['vendor_banner'];
                 }
 
                 if($request->vendor_gallery != "")
                 {   
-                    foreach ($request->vendor_gallery as $key => $value) {
+                    foreach ($input['vendor_gallery'] as $key => $value) {
                         $vendor_gallery[] = $this->UploadImage($file = $value,$path = config('global.file_path.vendor_image'));
-                        }
+                    }
                         $gallery = implode(',',$vendor_gallery); 
                     // $gym_interior_images = $this->UploadImage($file = $request->gym_interior_images,$path = config('global.file_path.gym_img'));
+                }else{
+                    $gallery = $request->vendor_gallery;
                 }
 
                 // echo $gallery;
 
                 $arr2 = explode(",",$gallery);
-                if($request->vendor_gallery != ""){
-                    $arr1 = explode(",",$request->vendor_gallery);
+                // dd($request->vendor_gallery);
+                // exit;
+                if($vendor->vendor_gallery != ""){
+                    $arr1 = explode(",",$vendor->vendor_gallery);
                 }else{
                     $arr1= [];
                 }
                 $arr2 = array_filter($arr2, 'strlen');
+               
                 if(count($arr1)>0){
                     $newarray = array_merge($arr1, $arr2);
                     $newarray1 = implode(',', $newarray);
+                    // dd($newarray);
+                    // exit;
                 }else{
                     $newarray1 = implode(',', $arr2);
                 }
@@ -234,11 +241,14 @@ class AdminVendorController extends Controller
                 }
 
                 $vendors = Vendor::find($input['vendor_id']);
-                $vendors->fill($vendors);
+                // dd($input);
+                // exit;
+                $vendors->fill($input);
                 $vendors->save();
                 $message = "Vendor Data Updated Sucessfully";
             }
-
+            Session::flash('message',$message);
+            return redirect('admin/vendor');
 
             }else{
 
@@ -305,7 +315,7 @@ class AdminVendorController extends Controller
 
             }
 
-        }
+    }
        
     
 
@@ -332,7 +342,9 @@ class AdminVendorController extends Controller
             }
             // $gym_interior_images = explode(',',$gymData->gym_interior_images);
         } 
-        $data->vendor_gallery = $vendor_gallerys;   
+       
+        
+        $data->vendor_gallery = $vendor_gallerys;
 //  dd( $vendor_gallery);
 //         exit;
         return view('admin.vendor.edit')->with(['VendorData' => $data]);
@@ -356,9 +368,27 @@ class AdminVendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function vendor_delete_img($id, $img_id)
     {
         //
+        // echo 'hii';exit;
+        $data = Vendor::where('vendor_id',$id)->first();
+        $gallery = explode(",", $data->vendor_gallery);  
+        // dd($gallery);
+        // exit;
+        $image = "";
+        foreach(array_keys($gallery, $img_id) as $key){
+            unset($gallery[$key]);
+        }
+
+        if(count($gallery)>0){
+            $image = implode(',',$gallery);
+        }else{
+            $image = NULL;
+        }
+        Vendor::where('vendor_id',$id)->update(['vendor_gallery' => $image]);
+        
+        return $this->vendor_data_edit($id);
     }
 
     /**

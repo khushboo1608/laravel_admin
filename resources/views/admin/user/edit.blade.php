@@ -75,7 +75,7 @@
                             <?php 
                             if(!empty($UserData->imageurl) )
                             {
-                              $url = url('public/images/app/user_profile/' . $UserData->imageurl)
+                              $url = url('public/images/app/user_profile/' . $UserData->imageurl);
                             }else{
                               $url = config('global.no_image.no_image');
                             }
