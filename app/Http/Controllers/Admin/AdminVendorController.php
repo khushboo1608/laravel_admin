@@ -8,6 +8,8 @@ use App\Models\Vendor;
 use App\DataTables\VendorDataTable;
 use Response;
 use Validator;
+use Hash;
+use Illuminate\Support\Facades\Session;
 
 class AdminVendorController extends Controller
 {
@@ -29,7 +31,7 @@ class AdminVendorController extends Controller
            
             return datatables()::of($this->dataTable->all($request))
             ->addIndexColumn()  
-            ->editColumn('vendot_icon', function ($data){
+            ->editColumn('vendor_icon', function ($data){
                 // echo "<pre>";
                 // print_r($data->vendor_icon);die;
                  $vendor_icon = $this->GetImage($file_name = $data->vendor_icon, $path=config('global.file_path.vendor_image'));
@@ -72,7 +74,7 @@ class AdminVendorController extends Controller
             ->addColumn('action', function($data){
 
                 $url=route("admin.vendor");
-                $btn = '<a href="'.$url.'/edit/'.$data->id.'" style="color: white !important"><button type="button" class="edit btn btn-primary btn-sm editPost"  title="edit"><i class="fa fa-edit"></i>
+                $btn = '<a href="'.$url.'/edit/'.$data->vendor_id.'" style="color: white !important"><button type="button" class="edit btn btn-primary btn-sm editPost"  title="edit"><i class="fa fa-edit"></i>
                 </button></a>&nbsp;&nbsp;<button type="button"  class="btn btn-danger btn-sm deletePost" onclick="DeleteUser(\''.$data->vendor_id.'\')" title="edit"><i class="fa fa-trash"></i>
                 </button>';
                  return $btn;
@@ -149,6 +151,7 @@ class AdminVendorController extends Controller
         $vendor_icon="";
         $vendor_banner="";
         $vendor_gallery=[];
+        $gallery = "";
         if($input['vendor_id'] != ""){
             $vendor = Vendor::where(['vendor_id' => $input['vendor_id']])->first();
 
@@ -183,11 +186,6 @@ class AdminVendorController extends Controller
                     $vendor_icon = $request->vendor_icon;
                 }
 
-                // if($request->vendor_icon != ""){
-                //     $vendor_icon = $this->UploadImage($file = $request->vendor_icon, $path = config('global.file_path.vendor_image'));
-                // }else{
-                //     $vendor_icon = $request->vendor_icon;
-                // }
                 if ($request->vendor_banner != "") {
                 
                     if ($vendor->vendor_banner != '') {
@@ -202,27 +200,16 @@ class AdminVendorController extends Controller
                     $vendor_banner = $request->vendor_banner;
                 }
 
-                // if($request->vendor_banner != ""){
-                //     $vendor_banner = $this->UploadImage($file = $request->vendor_banner, $path = config('global.file_path.vendor_image'));
-                // }else{
-                //     $vendor_banner = $request->vendor_banner;
-                // }
-    
-                if(isset($request->vendor_gallery)){
-                    if($request->vendor_gallery != ""){
-                        foreach($input['vendor_gallery'] as $key => $value){
-                            //REMOVE gallery image pending
-                            $vendor_gallery[] = $this->UploadImage($file = $request->vendor_gallery, $path = config('global.file_path.vendor_image'));
+                if($request->vendor_gallery != "")
+                {   
+                    foreach ($request->vendor_gallery as $key => $value) {
+                        $vendor_gallery[] = $this->UploadImage($file = $value,$path = config('global.file_path.vendor_image'));
                         }
-                        // echo '<pre>';
-                        // print_r($vendor_gallery); exit;
-                        $gallery = impload(',', $vendor_gallery); 
-                    }else{
-                        $gallery = $request->vendor_gallery;
-                    }
-                }else{
-                    $gallery = "";
+                        $gallery = implode(',',$vendor_gallery); 
+                    // $gym_interior_images = $this->UploadImage($file = $request->gym_interior_images,$path = config('global.file_path.gym_img'));
                 }
+
+                // echo $gallery;
 
                 $arr2 = explode(",",$gallery);
                 if($request->vendor_gallery != ""){
@@ -288,10 +275,11 @@ class AdminVendorController extends Controller
                         foreach($request->vendor_gallery as $key => $value){
                             $vendor_gallery[] = $this->UploadImage($file = $value,$path = config('global.file_path.vendor_image'));
                         }
-                        echo '<pre>';
-                        print_r($vendor_gallery); exit;
-                        $gallery = impload(',',$vendor_gallery);
-                        
+                        // echo '<pre>';
+                        // print_r($vendor_gallery); 
+                        $gallery = implode(',',$vendor_gallery);
+                        // echo $gallery;
+                        // exit;
                     } else {
                         // echo 'else';
                         $gallery = $request->vendor_gallery;
@@ -301,8 +289,9 @@ class AdminVendorController extends Controller
                     $input['vendor_banner'] = $vendor_banner;
                     $input['vendor_gallery'] = $gallery;
                     $input['vendor_feature'] = 0;
+                    $input['vendor_status'] = 1;
                     $input['vendor_id'] = $this->GenerateUniqueRandomString($table = 'vendors', $column='vendor_id', $chars=32);
-                    $input['vendor_password'] = Hash::make($request->vendor->password);
+                    $input['vendor_password'] = Hash::make($request->vendor_password);
                     $vendor = Vendor::create($input);
                     $message = "Vendor Insert Sucessfully";
 
@@ -326,9 +315,27 @@ class AdminVendorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function vendor_data_edit($id)
     {
         //
+        $data = Vendor::where('vendor_id',$id)->first();
+        
+        $data->vendor_icon = $this->GetImage($file_name = $data->vendor_icon, $path=config('global.file_path.vendor_image'));
+
+        $data->vendor_banner = $this->GetImage($file_name = $data->vendor_banner, $path=config('global.file_path.vendor_image'));
+        $vendor_gallerys = [];
+        if(isset($data->vendor_gallery))
+        {  
+            $vendor_gallery1 = explode(',',$data->vendor_gallery);
+            foreach ($vendor_gallery1 as $key => $val) {
+                $vendor_gallerys[] = $this->GetImage($val,$path=config('global.file_path.vendor_image'));
+            }
+            // $gym_interior_images = explode(',',$gymData->gym_interior_images);
+        } 
+        $data->vendor_gallery = $vendor_gallerys;   
+//  dd( $vendor_gallery);
+//         exit;
+        return view('admin.vendor.edit')->with(['VendorData' => $data]);
     }
 
     /**

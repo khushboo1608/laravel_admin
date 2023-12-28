@@ -48,6 +48,7 @@ Route::group(['prefix' => 'admin'], function () {
          Route::post('/status_vendor',[App\Http\Controllers\Admin\AdminVendorController::class, 'status_vendor'])->name('admin.status_vendor');
          Route::get('/vendor/add',[App\Http\Controllers\Admin\AdminVendorController::class, 'add_vendor'])->name('admin.addvendor');
          Route::post('/vendor/savevendor',[App\Http\Controllers\Admin\AdminVendorController::class, 'savevendor'])->name('vendor.savevendor');
+         Route::get('vendor/edit/{id}',   [App\Http\Controllers\Admin\AdminVendorController::class, 'vendor_data_edit'])->name('vendordataedit');
          
         });
 });

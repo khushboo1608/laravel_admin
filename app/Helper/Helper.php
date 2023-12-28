@@ -7,6 +7,7 @@ use App\Models\Settings;
 
 class Helper 
 {
+	//global function this fun is anywhere page
 	public static function LoggedUserImage()
 	{
 		$auth_user = auth()->user();
@@ -72,6 +73,27 @@ class Helper
 			$Name = env('APP_NAME');
 		}
 		return $Name;
+	}
+
+	public static function AppMapKey()
+	{
+		$setting =  Settings::first();
+		if(isset($setting->map_api_key))
+		{
+			if($setting->map_api_key !='')
+			{
+				$map_key = $setting->map_api_key;
+			}
+			else
+			{	
+				$map_key = env('APP_MAP_KEY');
+			}
+		}
+		else
+		{
+			$map_key = env('APP_MAP_KEY');
+		}
+		return $map_key;
 	}
 
 }

@@ -72,9 +72,14 @@
                     <div class="col-md-6">
                       <div class="fileupload_block">
                         <input type="file" name="imageurl" value="fileupload" id="fileupload"  accept="image/png, image/jpeg, image/jpg">
-                            @php
-                             $url = url('public/images/app/user_profile/' . $UserData->imageurl)
-                            @endphp
+                            <?php 
+                            if(!empty($UserData->imageurl) )
+                            {
+                              $url = url('public/images/app/user_profile/' . $UserData->imageurl)
+                            }else{
+                              $url = config('global.no_image.no_image');
+                            }
+                            ?>
                             <img type="image" src="{{$url}}" alt="image" style="width: 100%;height: 100%;" />
                            
                       </div>

@@ -14,9 +14,9 @@
               
               </div>
             </div>
-            <!-- <div class="form-header">
-              <div class="app-brand">{{env('APP_NAME')}} </div>
-            </div> -->
+            <div class="form-header">
+              <div class="app-brand">{{Helper::AppName()}} </div>
+            </div>
             <div class="login_title_lineitem"></div>
             <div class="clearfix"></div>
             <form action="{{ route('login') }}" method="post" id="admin-login-form" name="admin-login-form">

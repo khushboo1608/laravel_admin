@@ -4,11 +4,11 @@
 @include('admin.layouts.header')
 
 <div class="row">
-      <div class="col-md-12">
+    <div class="col-md-12">
         <div class="card">
           <div class="page_title_block">
             <div class="col-md-5 col-xs-12">
-              <div class="page_title">Add Vendor List </div>
+              <div class="page_title">Edit Vendor List </div>
             </div>
             <div class="col-md-7 col-xs-12">
               <div class="search_list">
@@ -41,7 +41,7 @@
           <div class="card-body mrg_bottom"> 
             <form action="{{route('vendor.savevendor')}}" name="addedituser" method="post" class="form form-horizontal" enctype="multipart/form-data" >
                 @csrf
-            	<input  type="hidden" name="vendor_id" id="vendor_id" value="" />
+            	<input  type="hidden" name="vendor_id" id="vendor_id" value="{{$VendorData->vendor_id}}" />
 
                   
               <div class="section">
@@ -49,37 +49,52 @@
                   <div class="form-group">
                     <label class="col-md-3 control-label"> Name :-</label>
                     <div class="col-md-6">
-                      <input type="text" name="vendor_name" id="vendor_name" value="" class="form-control" >
+                      <input type="text" name="vendor_name" id="vendor_name" value="{{$VendorData->vendor_name}}" class="form-control" >
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-md-3 control-label"> Description :-</label>
                     <div class="col-md-6">
-                      <textarea name="vendor_desc" id="vendor_desc"  rows="5"  class="form-control"></textarea>
+                      <textarea name="vendor_desc" id="vendor_desc"  rows="5"  class="form-control">{{$VendorData->vendor_desc}}</textarea>
                     </div>
                   </div>
          
                   <div class="form-group">
                     <label class="col-md-3 control-label">Select Image :-
-                      <p class="control-label-help"></p>
+                    <p class="control-label-help">(Recommended resolution: 696x300 Image)</p>
                     </label>
                     <div class="col-md-6">
                       <div class="fileupload_block">
-                        <input type="file" name="vendor_icon" accept="image/png, image/jpeg, image/jpg" value="fileupload" id="fileupload">
-                            <div class="fileupload_img"><img type="image" src="{{config('global.no_image.add_image')}}" alt="category image" /></div>
+                        <input type="file" name="vendor_icon"  accept="image/png, image/jpeg, image/jpg" value="fileupload" id="fileupload">
+                            <?php 
+                            if(!empty($VendorData->vendor_icon) )
+                            {
+                              $vendor_icon_url = $VendorData->vendor_icon;
+                            }else{
+                              $vendor_icon_url = config('global.no_image.no_image');
+                            }
+                            ?>
+                            <div class="fileupload_img"><img type="image" src="{{$vendor_icon_url}}" alt="category image" /></div>
                       </div>
                     </div>
                   </div>
                 
                   <div class="form-group">
                     <label class="col-md-3 control-label">Banner Image :-
-                      <p class="control-label-help"></p>
+                    <p class="control-label-help">(Recommended resolution: 696x300 Image)</p>
                     </label>
                     <div class="col-md-6">
                       <div class="fileupload_block">
                         <input type="file" name="vendor_banner" accept="image/png, image/jpeg, image/jpg" value="fileupload" id="fileupload">
-                            
-                            <div class="fileupload_img"><img type="image" src="{{config('global.no_image.add_image')}}" alt="category image" /></div>
+                        <?php 
+                            if(!empty($VendorData->vendor_banner) )
+                            {
+                              $vendor_banner_url = $VendorData->vendor_banner;
+                            }else{
+                              $vendor_banner_url = config('global.no_image.no_image');
+                            }?>
+
+                            <div class="fileupload_img"><img type="image" src="{{$vendor_banner_url}}" alt="category image" /></div>
                            
                       </div>
                     </div>
@@ -88,18 +103,18 @@
                  <div class="form-group">
                     <label class="col-md-3 control-label">Phone No :-</label>
                     <div class="col-md-6">
-                      <input type="number"  onKeyPress="if(this.value.length==10) return false;" name="vendor_phone" id="vendor_phone" value="" class="form-control">
+                      <input type="number"  onKeyPress="if(this.value.length==10) return false;" name="vendor_phone" id="vendor_phone" value="{{$VendorData->vendor_phone}}" class="form-control">
                     </div>
                   </div>
                   
                    <div class="form-group">
                     <label class="col-md-3 control-label">Email :-</label>
                     <div class="col-md-6">
-                      <input type="email" name="vendor_email" id="vendor_email" value="" class="form-control" >
+                      <input type="email" name="vendor_email" id="vendor_email" value="{{$VendorData->vendor_email}}" class="form-control" >
                     </div>
                   </div>    
                            <div class="form-group">
-                    <label class="col-md-3 control-label">Password :-</label>
+                    <label class="col-md-3 control-label">Password :- </label>
                     <div class="col-md-6">
                       <input type="password" name="vendor_password" id="vendor_password" value="" class="form-control" >
                     </div>
@@ -108,18 +123,57 @@
                         
                   <div class="form-group">
                     <label class="col-md-3 control-label">Select Mutiple Image :-
-                      <p class="control-label-help"></p>
+                      <p class="control-label-help">(Recommended resolution: 696x300 Image)</p>
                     </label>
                     <div class="col-md-6">
                       <div class="fileupload_block">
-                        <input type="file" name="vendor_gallery[]" accept="image/png, image/jpeg, image/jpg" value="fileupload" id="fileupload" multiple>
+                        <input type="file" name="vendor_gallery[]" value="fileupload" id="fileupload" multiple>
                             
                             <div class="fileupload_img"><img type="image" src="{{config('global.no_image.add_image')}}" alt="category image" /></div>
                            
                       </div>
                     </div>
                   </div>
-
+                  <br>
+                    <div class="form-group">
+                      <?php 
+                      $vendor_gallery = [];
+                      $url=route("admin.vendor");
+                      // echo $VendorData->vendor_gallery;
+                      // exit;
+                      ?>
+                      @if(isset($VendorData) && isset($VendorData->vendor_gallery))
+                        @if($VendorData->vendor_gallery !='')
+                          @foreach ($VendorData->vendor_gallery as $item)
+                          <?php dd($item); ?>
+                          <?php //echo $item;  ?>
+                            <div class="col-md-2">
+                            <div class="fileupload_block">
+                              <div class="fileupload_img">
+                                <img type="image" src="{{$item}}" alt="Vendor Gallery image" />
+                                <a href="{{$item}}" target="_blank" ><b> View </b></a> 
+                                @if($item !='')
+                                @php 
+                                  $img_id = explode('vendor_gallery', $item); 
+                                
+                                                       
+                                  @endphp
+                                <a href="{{$url}}/delete_img/{{$VendorData->vendor_id}}/{{$img_id}}" style="margin-left: 20px;"><b> Delete </b></a>
+                                @endif
+                              </div>                          
+                            </div>
+                            </div> 
+                            <?php //exit; ?>
+                            @endforeach
+                        @endif
+                      @endif
+                     
+                          @if(isset($VendorData) && isset($VendorData->interior_images))
+                      </div>
+                          <input id="vendor_gallery" type="hidden" name="vendor_gallery"  value="{{$VendorData->interior_images}}">
+                            @endif
+                            <br>                       
+                    </div>
                   <!-- Search input -->
                   <input id="searchInput" class="controls" type="text" placeholder="Enter a location">
 
@@ -137,21 +191,21 @@
                   <div class="form-group">
                     <label class="col-md-3 control-label">Address :-</label>
                     <div class="col-md-6">
-                      <input type="text"  name="vendor_adderss" id="address" value="" class="form-control" >
+                      <input type="text"  name="vendor_adderss" id="address" value="{{$VendorData->vendor_adderss}}" class="form-control" >
                     </div>
                   </div>
                   
                   <div class="form-group">
                     <label class="col-md-3 control-label">Postal_Code :-</label>
                     <div class="col-md-6">
-                      <input type="text"  name="vendor_postal_code" id="postal_code" value="" class="form-control" >
+                      <input type="text"  name="vendor_postal_code" id="postal_code" value="{{$VendorData->vendor_postal_code}}" class="form-control" >
                     </div>
                   </div>
                    
                   <div class="form-group">
                     <label class="col-md-3 control-label">Lattitude :-</label>
                     <div class="col-md-6">
-                      <input type="text"  name="vendor_lat" id="lattitude" value="" class="form-control" >
+                      <input type="text"  name="vendor_lat" id="lattitude" value="{{$VendorData->vendor_lat}}" class="form-control" >
                     </div>
                   </div>
                   
@@ -159,7 +213,7 @@
                   <div class="form-group">
                     <label class="col-md-3 control-label">Longitude :-</label>
                     <div class="col-md-6">
-                      <input type="text"  name="vendor_long" id="longitude" value="" class="form-control" >
+                      <input type="text"  name="vendor_long" id="longitude" value="{{$VendorData->vendor_long}}" class="form-control" >
                     </div>
                   </div>
                   
@@ -167,7 +221,7 @@
                    <div class="form-group">
                     <label class="col-md-3 control-label">Distance(Radius cover for Delievry for this Vendor) :-</label>
                     <div class="col-md-6">
-                      <input type="text"   name="vendor_distance" id="vendor_distance" value="" class="form-control">
+                      <input type="text"   name="vendor_distance" id="vendor_distance" value="{{$VendorData->vendor_distance}}" class="form-control">
                     </div>
                   </div>
                  
@@ -185,9 +239,10 @@
         </div>
       </div>
     </div>
-@include('admin.layouts.footer')
 
+@include('admin.layouts.footer')
 @endsection
+
 <style>
 #map {
     width: 100%;
